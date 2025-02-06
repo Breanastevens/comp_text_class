@@ -1,0 +1,81 @@
+---
+title: "R Proficiency HW"
+author: "Stevens Breana"
+date: "2025-02-06"
+output: html_document
+---
+
+```{r}
+library(tidyverse)
+```
+
+```{r}
+mob <- read.csv("https://raw.githubusercontent.com/wellsdata/CompText_Jour/main/data/mob_analysis_data.csv")
+view(mob)
+```
+
+```{r}
+#Using code, describe the number of rows and columns in the dataset
+nrow(mob)
+ncol(mob)
+```
+
+
+```{r}
+#--Create a table that displays a count of the top 15 newspaper entries
+Newspaper <- mob %>% 
+  filter(!is.na(Newspaper)) %>% 
+  count(Newspaper) %>% 
+  group_by(Newspaper) %>% 
+  arrange(desc(n))
+head(Newspaper, n =15)
+
+```
+
+
+```{r}
+#--Create a table that counts the different entries in the "keyword" column
+keyword <- mob %>% 
+  filter(!is.na(keyword)) %>% 
+  count(keyword) %>% 
+  group_by(keyword) %>% 
+  arrange(desc(n))
+head(keyword)
+```
+
+
+```{r}
+#--Create a table that counts all entries by year
+Year <- mob %>% 
+  count(Year) %>% 
+  group_by(Year) %>% 
+  arrange(desc(Year))
+head(Year)
+```
+
+
+```{r}
+#--Create a simple column ggplot chart that shows the total entries by year
+mob %>% 
+  count(Year) %>% 
+  group_by(Year) %>% 
+  arrange(desc(n)) %>% 
+  ggplot(aes(x = Year, y = n,
+             fill = n)) +
+  geom_col(position = "dodge") + 
+  theme(legend.position = "none") +
+#This is your title sequence
+  labs(title = "Total Entries, by Year",
+       subtitle = "Homework 2",
+       caption = "Graphic by Breana Stevens 2/6/24",
+       y="Number of Entries",
+       x="Year")
+```
+
+
+```{r}
+#Armed with your data analysis, write a 250 word memo at the end of the R markdown document that summarizes your findings. Use this opportunity to ask questions or note any major flaws in the data.
+
+#These findings show 3 interesting points. The first is that the Newspaper with the most entries is The Birmingham age-herald. This means that during our time period, the The Birmingham age-herald published more entries than any other newspaper in this data set on this topic. This logically makes sense given the history of racial tensions in Birmingham, AL (about 3.5 hours from where I grew up). The second finding is that "mob" is the most commonly used keyword in the newspaper articles in this data set, suggesting that most of these articles covered stories that were likely committed by mobs. I also found it interesting that masked was the second commonly used word, which speaks to what we know about the anonymity factor involved in lynchings. The third and last most interesting finding is that newspaper coverage of this issue peaked in the early 1900s, but was still relatively high both immediately before and after that. This supports the historical context that lynching was especially common during the early 1900s and the years before and after that. 
+```
+
