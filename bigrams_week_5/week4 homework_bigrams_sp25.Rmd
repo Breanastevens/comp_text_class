@@ -1,0 +1,137 @@
+---
+title: "Week 4 Bigrams Homework"
+author: "Breana Stevens"
+date: '02-20-2025'
+output: html_document
+---
+
+# Jour 689 Spring 2025:
+
+In this exercise, you will import the Nexis spreadsheet and create bigrams from the headlines
+
+Setup. These instructions are important. Follow them carefully
+
+1) Create a new folder called "bigrams_week_5" in your class folder
+2) Copy this file to "bigrams_week_5"
+3) Copy your spreadsheet to "bigrams_week_5"
+4) Create an .Rproj file that points to "bigrams_week_5"
+
+```{r}
+#load tidyverse, tidytext, rio, janitor libraries
+library(tidyverse)
+library(tidytext)
+library(janitor)
+
+
+```
+
+```{r}
+#Import spreadsheet using rio::import and clean the names
+
+
+#Import your data 
+bmore <- rio::import("Results list for__crime_ _Baltimore_ copy.XLSX")
+bmore1 <- rio::import("Results list for__crime_ _Baltimore_(2).XLSX")
+#Combining data files since the export gave me 2 files 
+bmore_final <- rbind(bmore, bmore1)
+
+view(bmore_final)
+
+#Cleaning names 
+bmore_final <- bmore_final |> 
+  clean_names()
+
+
+```
+# Tokenize the hlead column
+
+Copy the code from the in-class bigrams exercise and tokenize just the hlead column from your dataframe
+
+Hint: you're changing just one variable
+
+```{r}
+stories <- str_replace_all(bmore_final$hlead, "- ", "")
+stories_df <- tibble(stories,)
+
+# unnest includes lower, punct removal
+
+stories_tokenized <- stories_df %>%
+  unnest_tokens(word,stories)
+
+stories_tokenized
+```
+
+#Remove stopwords and count the words
+```{r}
+
+data(stop_words)
+
+test <- stop_words %>% 
+  as.data.frame()
+
+head(test)
+
+stories_tokenized <- stories_tokenized %>%
+  anti_join(stop_words, by = c("word" = "word")) %>%
+  filter(word != "temp_file") %>%
+  filter(word != "stories_corpus") %>%
+  filter(!grepl('[0-9]', word))
+
+# Word Count
+
+story_word_ct <- stories_tokenized %>%
+  count(word, sort=TRUE)
+
+# Word Count
+
+
+```
+
+# Create Bigrams
+
+```{r}
+
+
+#Filter out stop words.
+
+bigrams <- stories_df %>%
+  unnest_tokens(bigram, stories, token="ngrams", n=2)
+
+bigrams
+
+#Filter out stop words.
+
+
+bigrams1 <- bigrams %>%
+  separate(bigram, c("word1", "word2"), sep = " ")
+
+bigrams2 <- bigrams1 %>%
+  filter(!word1 %in% stop_words$word) %>%
+  filter(!word2 %in% stop_words$word) %>%
+  filter(!is.na(word1)) %>%
+  filter(!is.na(word2))
+    
+bigram3 <- bigrams2 %>%
+  count(word1, word2, sort = TRUE)
+
+```
+```{r}
+#Unigram just because I'm nosey 
+
+stories_tokenized <- stories_tokenized %>%
+  anti_join(stop_words, by = c("word" = "word")) %>%
+  filter(word != "temp_file") %>%
+  filter(word != "stories_corpus") %>%
+  filter(!grepl('[0-9]', word))
+
+# Word Count
+
+story_word_ct <- stories_tokenized %>%
+  count(word, sort=TRUE) 
+
+```
+
+
+# Write 250 words about what your learned analyzing the list of tokens and bigrams. Include questions about the process and any difficulties you encountered.
+
+#I looked at both unigram and bigrams because I wanted to check on both. In looking at the unigram, I saw that Baltimore and crime were the top two most commonly used words. A finding but not that interesting of one. For a project like this, the bigrams were much more interesting. I was interested to see the bigrams violent crime, immigration crime, and money laundering to come up. I was also interested to see that juvenile crime came up as well! I am excited to pull the Reddit or Facebook data and redo this analysis with it.

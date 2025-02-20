@@ -1,0 +1,156 @@
+---
+title: "Metadata"
+author: "Wells"
+date: "2025-02-12"
+output: html_document
+---
+
+Class exercise to import your project data into R
+--Create a folder called "project" in your code folder
+--Save this file to the "project" folder
+--Move your Nexis spreadsheet to the folder
+--Create a project file: File | New Project | *** select Existing folder | "project"
+--After project.Rproj launches, then launch this file, metadata.Rmd, and complete the tutorial
+
+**By doing this, you avoid the ring of hell where R can't find your data**
+
+
+#load tidyverse, janitor, rio
+```{r}
+
+library(tidyverse)
+library(janitor)
+library(rio)
+```
+
+```{r}
+#Import your data 
+bmore <- rio::import("Results list for__crime_ _Baltimore_.XLSX")
+bmore1 <- rio::import("Results list for__crime_ _Baltimore_(2).XLSX")
+#Combining data files since the export gave me 2 files 
+bmore_final <- rbind(bmore, bmore1)
+
+view(bmore_final)
+
+```
+
+```{r}
+#Cleaning names 
+bmore_final <- bmore_final |> 
+  clean_names()
+
+```
+
+
+
+```{r}
+# fix date
+bmore_final <- bmore_final |> 
+  mutate(date = as.Date(strptime(published_date, format = "%B %d, %Y %A")))
+
+```
+
+
+
+```{r}
+#--Using code, describe the number of rows and columns in the dataset. Use the print(Paste0....) to display the results in a sentence form. 
+print(paste0("This dataset has ", nrow(bmore_final), " rows and ", ncol(bmore_final), " columns."))
+```
+
+```{r}
+#--Create a table that displays a count of the top 20 newspaper_city entries. Filter out the NA values
+#table for publication location
+top <- bmore_final |> 
+  #filter nas
+  filter(!is.na(publication_location)) |> 
+  count(publication_location) |>
+  top_n(20, n) |> 
+  arrange(desc(n))
+top
+#but let's see what news organizations these actually are 
+top2 <- bmore_final |> 
+  #filter nas
+  filter(!is.na(publication_4)) |> 
+  count(publication_4) |>
+  top_n(20, n) |> 
+  arrange(desc(n))
+top2
+
+top3 <- bmore_final |> 
+  #filter nas
+  filter(!is.na(publication_16)) |> 
+  count(publication_16) |>
+  top_n(20, n) |> 
+  arrange(desc(n))
+top3
+
+```
+
+
+
+
+```{r}
+#--Create a table that counts all entries by year.
+#create the var year first
+bmore_final <- bmore_final |> 
+  mutate(year = format(date, "%Y"))
+
+
+#then do the counts
+year <- bmore_final |> 
+  count(year) |> 
+  arrange(year)
+
+year
+```
+
+
+
+```{r}
+#--Create a simple column ggplot chart that shows the total entries by year
+bmore_final |> 
+  count(year) |> 
+   ggplot(aes(x = year, y = n,
+             fill = n)) +
+  geom_col(position = "dodge") + 
+  theme(legend.position = "none") +
+#This is your title sequence
+  labs(title = "Count of entries by year",
+       subtitle = "News Articles on Baltimore Crime",
+       caption = "Graphic by Breana Stevens 2-13-14",
+       y="Count of entries",
+       x="Year")
+
+```
+
+
+```{r}
+#Armed with your data analysis, write a 250 word memo at the end of the R markdown document that summarizes your findings. Use this opportunity to ask questions or note any major flaws in the data.
+
+#I was shocked to see that 27 articles are from international news sources. I didn't realize that such localized crime would get covered on a larger scale. The Baltimore Sun published the most articles in my data set. I was confused why there are two publication data fields (publication_4 and publication_16.. I created tables for both of them and they looked very similar besides the formatting of "The Daily Record". The 100 articles I pulled are from years 2024 and 2025, with slightly more articles coming from 2024. I am excited to dig into keywords that are mentioned in them! 
+```
+
+```{r}
+#--Compress your folder as a .zip file and upload that to Elms
+#okay!
+```
+
+
+# My claude.ai query and reply:
+Q: In r, i need to create a new properly formatted date column from a "published_date" column with character data that looks like this: "January 14, 2025 Tuesday",  - how do I transform it into a date format?
+
+A: You can use the as.Date() function along with strptime() to convert that date format. Here's how:
+
+df <- df |>
+  mutate(new_date = as.Date(strptime(published_date, format = "%B %d, %Y %A")))
+  
+The format string specifies:
+
+%B - full month name (January)
+%d - day of the month (14)
+%Y - 4-digit year (2025)
+%A - full weekday name (Tuesday)
+
+This will create a proper Date column that you can use for analysis and plotting. The resulting date will be in the standard format "2025-01-14".
+
+#count years, publications, etc. create a ggplot

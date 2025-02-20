@@ -58,8 +58,9 @@ File renamed to: SF_311_Jan29.xlsx
 #background on tidyverse: https://www.tidyverse.org/packages/
 #load tidyverse and janitor libraries
 
+#library XXXXXX fill it in!
+library(janitor)
 library(tidyverse)
-library(janitor) 
 ```
 
 **Load Data**
@@ -72,7 +73,6 @@ SF <- rio::import("https://docs.google.com/spreadsheets/d/1-nkosLJKkfeLSl-UG82DD
 
 ```{r}
 #display the first six rows of SF using head
-head(SF)
 ```
 
 **Really Interview the Data** How big are you? Rows? Columns? List of
@@ -80,7 +80,6 @@ column names?
 
 ```{r}
 #examine all of the SF data using glimpse
-glimpse(SF)
 ```
 
 **Clean column names, Process dates**
@@ -92,16 +91,13 @@ SF <- janitor::clean_names(SF)
 SF$call_date2 <- mdy(SF$call_date)
 #This creates a new column for year
 SF$year <- year(SF$call_date2)
-glimpse(SF)
 ```
-
 
 **Sort by Date**
 
 ```         
 We're using a weirdo command called a 'pipe' - %>% - that joins
 lines of code. In the example below, the SF table is filtered in descending order and the results are dumped into a new file called SF1.
-Shift + command + M in mac is the pip command
 ```
 
 ```{r}
@@ -172,20 +168,11 @@ ggplot(Years,aes(x = year, y = n,
 
 ```{r}
 #Copy section of code from above...
-SF %>% 
-    count(year) %>% 
-    group_by(year) %>% 
+# SF %>% 
+#    count(year) %>% 
+#    group_by(year) %>% 
 #Sandwich it onto a simple ggplot that you created in the prior code chunk
-  ggplot(aes(x = year, y = n,
-             fill = n)) +
-  geom_col(position = "dodge") + 
-  theme(legend.position = "none") +
-#This is your title sequence
-  labs(title = "311 Calls for Service By Day, San Francisco",
-       subtitle = "SF PD Service Call Data, 2016-2019",
-       caption = "Graphic by Rob Wells, 2-12-2022",
-       y="Number of Calls",
-       x="Year")
+  
 ```
 
 <br>
@@ -196,12 +183,6 @@ SF %>%
 by day
 
 ```{r}
-#This creates a new column for day
-call_date2 <- SF %>% 
-  count(call_date2) %>% 
-  group_by(call_date2) %>% 
-  arrange(desc(n))
-head(call_date2)
 
 ```
 
@@ -209,20 +190,6 @@ head(call_date2)
 it
 
 ```{r}
-SF %>% 
-  count(call_date2) %>% 
-  group_by(call_date2) %>% 
-  arrange(desc(n)) %>% 
-  ggplot(aes(x = call_date2, y = n,
-             fill = n)) +
-  geom_col(position = "dodge") + 
-  theme(legend.position = "none") +
-#This is your title sequence
-  labs(title = "311 Calls for Service By Day, San Francisco",
-       subtitle = "SF PD Service Call Data, 2016-2019",
-       caption = "Graphic by Rob Wells, 2-12-2022",
-       y="Number of Calls",
-       x="Year")
 
 ```
 
@@ -278,7 +245,7 @@ Stenhaug](https://www.youtube.com/watch?v=6xbGZDUu5W4) <br>\
 **Export to spreadsheet**
 
 ```{r}
-write.csv(Days,"Days.csv")
+#write.csv(Days,"Days.csv")
 ```
 
 <br>
