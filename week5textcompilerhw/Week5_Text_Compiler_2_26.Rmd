@@ -1,0 +1,332 @@
+---
+title: "Text Compiler Homework"
+author: "Breana Stevens"
+date: "02-27-2025"
+output: html_document
+---
+
+#Jour 689: This code, largely written by the famous **Sean Mussenden**, takes separate text files and compiles them into a single dataframe for analysis.
+
+1)  Create a folder Week5_Text_Compiler
+2)  Copy your spreadsheet index and the folder of text files into Week5_Text_Compiler
+3)  Create an .Rproj file for Week5_Text_Compiler
+
+```{r}
+library(tidyverse)
+library(janitor)
+install.packages("striprtf")
+library(striprtf)
+
+```
+
+# Reformat .RTF files
+
+```{r}
+# Load required packages
+
+# Set the paths for your folders
+input_folder <- "./Baltimore_crime_final_2/"  # Replace with your input folder path
+
+output_folder <- "./file_raw_text/" # Replace with your output folder path
+
+# Create output folder if it doesn't exist
+if (!dir.exists(output_folder)) {
+  dir.create(output_folder)
+}
+
+# Get a list of all .rtf files in the input folder
+rtf_files <- list.files(path = input_folder, pattern = "\\.RTF$", full.names = TRUE)
+
+# Convert each .rtf file to .txt
+for (file in rtf_files) {
+  # Extract the file name without extension
+  file_name <- tools::file_path_sans_ext(basename(file))
+  
+  # Read the RTF content
+  rtf_content <- read_rtf(file)
+  
+  # Create output file path
+  output_file <- file.path(output_folder, paste0(file_name, ".txt"))
+  
+  # Write the content to a .txt file
+  writeLines(rtf_content, output_file)
+  
+  # Print progress
+  cat("Converted:", file, "to", output_file, "\n")
+}
+
+cat("Conversion complete!\n")
+```
+
+# Raw text compiler
+
+```{r include=FALSE}
+#This creates an index with the file path to the stories. And then it compiles the stories into a dataframe
+#####################
+# Begin SM Code #####
+#####################
+
+###
+# List out text files that match pattern .txt, create DF
+###
+
+#Adjust thisline for your file name
+files <- list.files("./file_raw_text", pattern="*.txt") %>% 
+  as.data.frame() |> 
+  rename(filename = 1) |> 
+  #create an matching file name
+  mutate(index = str_replace_all(filename, ".txt", "")) %>%
+  mutate(index = tolower(gsub("[[:punct:][:space:]|]", "", index))) |> 
+  mutate(index = tolower(index)) |> 
+  mutate(index = str_sub(index, 1, 25)) |> 
+  distinct(index, .keep_all = TRUE)
+
+
+#Join the file list to the index
+
+final_data <- rio::import("bmore_final_index.csv") |> 
+  clean_names() |> 
+   #create an matching file name
+  mutate(index = tolower(gsub("[[:punct:][:space:]|]", "", title))) |> 
+  mutate(index = tolower(index)) |> 
+  mutate(index = str_sub(index, 1, 25)) |> 
+  distinct(index, .keep_all = TRUE)
+```
+
+### Check for duplicate entries
+
+```{r}
+
+final_data |> 
+  count(title) |> 
+  arrange(desc(n))
+```
+
+# why did it drop from 100 to 82?
+
+```{r}
+dupe_data <- rio::import("bmore_final_index.csv") |> 
+  clean_names() |> 
+   #create an matching file name
+  mutate(index = tolower(gsub("[[:punct:][:space:]|]", "", title))) |> 
+  mutate(index = tolower(index)) |> 
+  mutate(index = str_sub(index, 1, 25))
+```
+```{r}
+dupe_data |> 
+  count(title) |> 
+  arrange(desc(n))
+```
+
+
+
+
+```{r}
+
+final_index <- final_data |> 
+  inner_join(files, c("index")) |> 
+#you need the actual hard-coded path on this line below to the text
+  mutate(filepath = paste0("./file_raw_text/", filename))
+
+head(final_index)
+```
+
+#Fact Check
+
+```{r}
+
+anti_final_index <- final_data |> 
+  anti_join(files, c("index"))
+
+```
+
+#Checking for duplicates
+
+```{r}
+final_index |> 
+  count(title) |> 
+  arrange(desc(n))
+
+```
+
+#Text compiler
+
+```{r}
+###
+# Define function to loop through each text file 
+###
+
+create_article_text <- function(row_value) {
+  
+  #row_value is the single argument that is passed to the function
+  # Take each row of the dataframe
+  temp <- final_index %>%
+    slice(row_value)
+  
+  # Store the filename for  use in constructing articles dataframe
+  temp_filename <- temp$filename
+  
+  # Create a dataframe by reading in lines of a given textfile
+  # Add a filename column 
+  articles_df_temp <- read_lines(temp$filepath) %>%
+    as_tibble() %>%
+    mutate(filename = temp_filename)
+  
+  # Bind results to master articles_df
+  # <<- returns to global environment
+  articles_df <<- articles_df %>%
+    bind_rows(articles_df_temp)
+}
+
+###
+# Create elements needed to run function
+###
+
+# Create empty tibble to store results
+articles_df <- tibble()
+#running once to test
+#create_article_text(2) 
+# Create an array of numbers to loop through, from 1 to the number of rows in our index dataframe 
+row_values <- 1:nrow(final_index)
+
+###
+# Execute function using lapply
+# This loops through each row of the dataframe and append results to master file
+###
+
+lapply(row_values, create_article_text)
+
+###
+# Clean up articles_df and join to index dataframe
+###
+
+articles_df <- articles_df %>%
+  select(filename, sentence=value) %>%
+  inner_join(final_index)
+
+
+# write.csv(articles_df, "../exercises/assets/extracted_text/kemi_df2.csv")
+
+```
+---
+title: "Adding in bigrams homework after text compiler"
+author: "Breana Stevens"
+date: '02-27-2025'
+output: html_document
+---
+
+# Jour 689 Spring 2025:
+
+In this exercise, you will import the Nexis spreadsheet and create bigrams from the headlines
+
+Setup. These instructions are important. Follow them carefully
+
+1) Create a new folder called "bigrams_week_5" in your class folder
+2) Copy this file to "bigrams_week_5"
+3) Copy your spreadsheet to "bigrams_week_5"
+4) Create an .Rproj file that points to "bigrams_week_5"
+
+
+```{r}
+
+#Cleaning names 
+articles_df <- articles_df |> 
+  clean_names()
+
+
+```
+# Tokenize the hlead column
+
+Copy the code from the in-class bigrams exercise and tokenize just the hlead column from your dataframe
+
+Hint: you're changing just one variable
+
+```{r}
+stories <- str_replace_all(articles_df$sentence, "- ", "")
+stories_df <- tibble(stories,)
+
+# unnest includes lower, punct removal
+
+library(tidytext)
+stories_tokenized <- stories_df %>%
+  unnest_tokens(word,stories)
+
+stories_tokenized
+```
+
+#Remove stopwords and count the words
+```{r}
+
+data(stop_words)
+
+test <- stop_words %>% 
+  as.data.frame()
+
+head(test)
+
+stories_tokenized <- stories_tokenized %>%
+  anti_join(stop_words, by = c("word" = "word")) %>%
+  filter(word != "temp_file") %>%
+  filter(word != "stories_corpus") %>%
+  filter(!grepl('[0-9]', word))
+
+# Word Count
+
+story_word_ct <- stories_tokenized %>%
+  count(word, sort=TRUE)
+
+# Word Count
+
+
+```
+
+# Create Bigrams
+
+```{r}
+
+
+#Filter out stop words.
+
+bigrams <- stories_df %>%
+  unnest_tokens(bigram, stories, token="ngrams", n=2)
+
+bigrams
+
+#Filter out stop words.
+
+
+bigrams1 <- bigrams %>%
+  separate(bigram, c("word1", "word2"), sep = " ")
+
+bigrams2 <- bigrams1 %>%
+  filter(!word1 %in% stop_words$word) %>%
+  filter(!word2 %in% stop_words$word) %>%
+  filter(!is.na(word1)) %>%
+  filter(!is.na(word2))
+    
+bigram3 <- bigrams2 %>%
+  count(word1, word2, sort = TRUE)
+
+```
+```{r}
+#Unigram just because I'm nosey 
+
+stories_tokenized <- stories_tokenized %>%
+  anti_join(stop_words, by = c("word" = "word")) %>%
+  filter(word != "temp_file") %>%
+  filter(word != "stories_corpus") %>%
+  filter(!grepl('[0-9]', word))
+
+# Word Count
+
+story_word_ct <- stories_tokenized %>%
+  count(word, sort=TRUE) 
+
+```
+
+
+# Write 250 words about what your learned analyzing the list of tokens and bigrams. Include questions about the process and any difficulties you encountered.
+
+#I joined the metadata on my articles with the article text at the beginning of this assignmet. Similiar to last  week, I looked at both unigram and bigrams again just in case anything intresting came up in unigrams. In looking at the unigram, I saw that Baltimore and crime were the top two most commonly used words. A finding but not that interesting of one.I was interested to see the bigrams results but was a bit dissapointed that so many were bigrams that did not give great information like "baltimore sun",  "load date", or "english language". I was interested to see, however, that some bigrams like "gun violence", "money laundering", or "juvenile crime" came up. I'm wondering if I should instead grab all Baltimore Sun articles (regardless of whether they mention crime) and then that might tell me more interested bigrams and how much crime comes up. Or...I could leave everything as is and see if the sentiment analysis (which I'm more interested in for my dissertation) pulls anything interesting. 
+
+

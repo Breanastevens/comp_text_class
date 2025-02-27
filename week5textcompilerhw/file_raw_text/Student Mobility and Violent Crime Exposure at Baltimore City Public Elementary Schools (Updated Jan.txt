@@ -1,0 +1,43 @@
+
+
+
+
+ 
+NewsRx Science Daily
+January 11, 2024 Thursday
+
+
+Copyright 2024 NewsRx, LLC All Rights Reserved
+
+
+Section: SOCIAL SCIENCES
+Length: 216 words
+Body
+
+
+2024 JAN 11 (NewsRx) -- By a News Reporter-Staff News Editor at NewsRx Science Daily -- According to news reporting based on a preprint abstract, our journalists obtained the following quote sourced from osf.io:
+ “High levels of school mobility are a problem in many urban districts. Many of these same districts are also dealing with high rates of violent crime.
+ “In this study, we use six years (2010-11 to 2015-16) of administrative data from Baltimore City public elementary school students and crime data from the Baltimore Police Department to examine whether changes in violent crime at schools are associated with the likelihood of school exit.
+ “Using logistic regression with school fixed-effects to adjust for constant differences between schools, we find that students are more likely to leave following years with higher levels of violent crime at their school.
+ “These associations are strongest for students ineligible for free- or reduced-price meals and from safer neighborhoods.”
+ This preprint has not been peer-reviewed.
+ For more information on this research see: osf.io/preprints/socarxiv/hpz5g/
+ Keywords for this news article include: Legal Issues, Social Sciences. 
+ Our reports deliver fact-based news of research and discoveries from around the world. Copyright 2024, NewsRx LLC 
+Classification
+
+
+Language: ENGLISH
+
+Document-Type: Expanded Reporting
+
+Publication-Type: Newsletter
+
+Subject: VIOLENT CRIME (92%); CRIMINAL OFFENSES (90%); EDUCATION SYSTEMS & INSTITUTIONS (90%); JOURNALISM (90%); NEGATIVE NEWS (90%); PRIMARY SCHOOLS (90%); PUBLIC SCHOOLS (90%); STUDENTS & STUDENT LIFE (90%); VIOLENT CRIME STATISTICS (90%); HUMANITIES & SOCIAL SCIENCE (79%); NEWS REPORTING (78%); WRITERS (78%); CRIME, LAW ENFORCEMENT & CORRECTIONS (77%); EDUCATION & TRAINING (77%); URBAN SCHOOLS (77%); CRIME STATISTICS (72%); POLICE FORCES (72%); Legal Issues;Social Sciences (%)
+
+Industry: EDUCATION SYSTEMS & INSTITUTIONS (90%); EDUCATIONAL SERVICES (90%); PRIMARY SCHOOLS (90%); PUBLIC SCHOOLS (90%); NEWS REPORTING (78%); WRITERS (78%); URBAN SCHOOLS (77%)
+
+Load-Date: January 11, 2024
+
+
+End of Document
