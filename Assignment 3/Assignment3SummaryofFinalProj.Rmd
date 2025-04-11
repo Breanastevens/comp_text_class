@@ -1,0 +1,174 @@
+---
+title: "Assignment 3 Summary of Final Proj"
+author: "Stevens Breana"
+date: "2025-04-11"
+output: html_document
+---
+
+# Jour689 Spring 2025
+
+#Describe your data source: The data for this project consists of 100 newspaper articles downloaded from NexisUni. The articles were gathered based on the search parameters “crime” and “Baltimore”, meaning they had those two words in the article content. The data is restricted to those published in English.
+
+#Spell out your content analysis plan, including preliminary work on a code book: For this research, I will be answering two research questions. The first (1) Do news articles covering crime in Baltimore use more negative language than positive or neutral? and the second is (2) Do news articles covering crime in Baltimore mention African Americans or immigrants more than other races and groups? For the first research question, I will use the AFINN lexicon as my codebook to identify frequency of the category "negative" used in articles. The unit of analysis will be sentences. Based on the lexicon, I will categorize articles within the sample as being mostly negative or positive. I will then count the number of articles that fit into each category to better describe the data. For the second research question, I will identify the frequency of the words "Black", "African American", and "immigrant" in articles. I will quantify the number of articles that use this language to understand the extent to which these two descriptors are used. The purpose of this is to understand the extent to which race and immigration are mentioned crime articles covering Baltimore. 
+
+
+```{r}
+#Load the appropriate software libraries
+#Install packages if you don't have them already
+#install.packages("tidyverse")
+#install.packages("tidytext")
+install.packages("quanteda")
+install.packages("readtext")
+install.packages("DT")
+
+install.packages("rio")
+install.packages("lubridate")
+
+library(tidyverse)
+library(tidytext) 
+library(quanteda)
+library(readtext)
+library(DT)
+library(lubridate)
+library(rio)
+library(dplyr)
+
+
+#Load the data
+#Import your data 
+bmore <- rio::import("Results list for__crime_ _Baltimore_ copy 2.XLSX")
+bmore1 <- rio::import("Results list for__crime_ _Baltimore_(2).XLSX")
+#Combining data files since the export gave me 2 files 
+bmore_final <- rbind(bmore, bmore1)
+
+articles_df <- read_csv("articles_df copy 2.csv")
+
+#Provide a sample of the data and some descriptive statistics.
+#Number of articles:
+sum(!is.na(bmore_final$Title))
+
+#Average article word count:
+bmore_final$"Word count" <- as.numeric(bmore_final$"Word count")
+mean(bmore_final$"Word count", na.rm = TRUE)
+
+#Number of articles by location 
+table(bmore_final$"Publication location")
+
+#Number of articles by country 
+table(bmore_final$"Countries")
+```
+
+
+```{r}
+#Using code, describe the number of rows and columns of the dataset
+nrow(bmore_final)   
+ncol(bmore_final)   
+
+```
+
+
+#Create ggplot chart showing the distribution of the data over time 
+```{r}
+#Let's do year first...need to extract year form published date 
+library(dplyr)
+library(stringr)
+
+bmore_final <- bmore_final %>%
+  mutate(year = str_extract(`Published date`, "\\d{4}"))
+
+library(ggplot2)
+
+ggplot(bmore_final, aes(x = year)) +
+  geom_bar(fill = "steelblue") +
+  labs(title = "Distribution of Publications by Year",
+       x = "Year",
+       y = "Number of Publications") +
+  theme_minimal()
+
+#Let's do date now 
+library(dplyr)
+library(lubridate)
+
+bmore_final <- bmore_final %>%
+  mutate(date_parsed = mdy(`Published date`),         # convert to actual Date
+         year = year(date_parsed),                    # extract year
+         month = month(date_parsed, label = TRUE),    # extract month (as label like Jan, Feb)
+         day = day(date_parsed))                      # extract day
+
+ggplot(bmore_final, aes(x = date_parsed)) +
+  geom_bar(fill = "steelblue") +
+  labs(title = "Distribution of Publications by Date",
+       x = "Date",
+       y = "Number of Publications") +
+  theme_minimal()
+
+
+```
+
+
+#Produce a list of top 20 bigrams
+
+```{r}
+#Cleaning names 
+library(janitor)
+bmore_final <- bmore_final |> 
+  clean_names()
+
+stories <- str_replace_all(bmore_final$hlead, "- ", "")
+stories_df <- tibble(stories,)
+
+# unnest includes lower, punct removal
+
+stories_tokenized <- stories_df %>%
+  unnest_tokens(word,stories)
+
+stories_tokenized
+
+data(stop_words)
+
+test <- stop_words %>% 
+  as.data.frame()
+
+head(test)
+
+stories_tokenized <- stories_tokenized %>%
+  anti_join(stop_words, by = c("word" = "word")) %>%
+  filter(word != "temp_file") %>%
+  filter(word != "stories_corpus") %>%
+  filter(!grepl('[0-9]', word))
+
+
+bigrams <- stories_df %>%
+  unnest_tokens(bigram, stories, token="ngrams", n=2)
+
+bigrams
+
+#Filter out stop words and adding custom words.
+
+library(tibble)
+
+my_words <- tibble(word = c("baltimore"))
+custom_stop_words <- bind_rows(stop_words, my_words)
+
+bigrams1 <- bigrams %>%
+  separate(bigram, c("word1", "word2"), sep = " ")
+
+bigrams2 <- bigrams1 %>%
+  filter(!word1 %in% stop_words$word) %>%
+  filter(!word2 %in% stop_words$word) %>%
+  filter(!word1 %in% custom_stop_words$word) %>%
+  filter(!word2 %in% custom_stop_words$word) %>%
+  filter(!is.na(word1)) %>%
+  filter(!is.na(word2))
+    
+bigram3 <- bigrams2 %>%
+  count(word1, word2, sort = TRUE)
+
+head(bigram3, 20)  
+
+
+```
+
+
+
+
