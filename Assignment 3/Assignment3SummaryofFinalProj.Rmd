@@ -7,6 +7,8 @@ output: html_document
 
 # Jour689 Spring 2025
 
+#ADD ABSTRACT HERE AND HOW WLL APPLY BIGRAMS, KIWC, SENTIMENT, and TOPIC MODELING 
+
 #Describe your data source: The data for this project consists of 100 newspaper articles downloaded from NexisUni. The articles were gathered based on the search parameters “crime” and “Baltimore”, meaning they had those two words in the article content. The data is restricted to those published in English.
 
 #Spell out your content analysis plan, including preliminary work on a code book: For this research, I will be answering two research questions. The first (1) Do news articles covering crime in Baltimore use more negative language than positive or neutral? and the second is (2) Do news articles covering crime in Baltimore mention African Americans or immigrants more than other races and groups? For the first research question, I will use the AFINN lexicon as my codebook to identify frequency of the category "negative" used in articles. The unit of analysis will be sentences. Based on the lexicon, I will categorize articles within the sample as being mostly negative or positive. I will then count the number of articles that fit into each category to better describe the data. For the second research question, I will identify the frequency of the words "Black", "African American", and "immigrant" in articles. I will quantify the number of articles that use this language to understand the extent to which these two descriptors are used. The purpose of this is to understand the extent to which race and immigration are mentioned crime articles covering Baltimore. 
@@ -17,12 +19,12 @@ output: html_document
 #Install packages if you don't have them already
 #install.packages("tidyverse")
 #install.packages("tidytext")
-install.packages("quanteda")
-install.packages("readtext")
-install.packages("DT")
-
-install.packages("rio")
-install.packages("lubridate")
+# install.packages("quanteda")
+# install.packages("readtext")
+# install.packages("DT")
+# 
+# install.packages("rio")
+# install.packages("lubridate")
 
 library(tidyverse)
 library(tidytext) 
@@ -33,6 +35,10 @@ library(lubridate)
 library(rio)
 library(dplyr)
 
+#rsw comment - separate chunk to load packages and libraries
+```
+
+```{r}
 
 #Load the data
 #Import your data 
@@ -46,6 +52,11 @@ articles_df <- read_csv("articles_df copy 2.csv")
 #Provide a sample of the data and some descriptive statistics.
 #Number of articles:
 sum(!is.na(bmore_final$Title))
+
+
+#rsw comment - let's print out these results in a sentence
+cat("\nNumber of articles: ", sum(!is.na(bmore_final$Title))  )
+
 
 #Average article word count:
 bmore_final$"Word count" <- as.numeric(bmore_final$"Word count")

@@ -1,0 +1,740 @@
+---
+title: "Final Project for Jour689R: Immigration and Topics Discussed in Baltimore News Articles and on Social Media (Spring 2025)"
+author: "Breana Stevens"
+date: "May 1, 2025"
+output: html_document
+---
+
+**Jour689R Spring 2025**
+
+**Abstract:** This project looks at 100 news articles covering crime in Baltimore to understand the extent to which immigration is mentioned in those articles. It also used 932 Reddit posts to understand the sentiments of posts and the topics discussed in a Baltimore group. I find that less than half of news articles mention immigration (23%). I also find that Reddit posts are generally neutral in nature and that users discussed topics related to community, the outdoors, and transportation, for example. 
+
+**Research Questions and Content Analysis Plans:**
+
+**1. To what extent do news articles covering crime in Baltimore mention immigrant groups?**
+
+**Data Source:** The data for this portion of the project consists of 100 newspaper articles downloaded from NexisUni. The articles were gathered based on the search parameters “crime” and “Baltimore”, meaning they had those two words in the article content. The data is restricted to those published in English.
+
+**Summary of the literature:** Public discourse on crime has historically been and is increasingly racialized (Cho and Ho, 2018). For example, in national news, White people are more likely to be shown as crime victims, law enforcement, or bystanders (Adamson, 2016). In the context of immigration, one study found that from 1990 to 2013, "most immigration-crime news stories describe immigrants as especially crime-prone or as increasing aggregate crime rates" (Harris and Gruenewald, 2020).This is important because one way to ensure that an issue maintains prominence in public policy is through the use of media. This is because the public, especially voters, obtain their information about policies through the media. Recurring media coverage of a certain issue helps keep it at the forefront of the public’s mind. Additionally, political elites use the media to communicate their messages, including the policies that they are advocating for or against (Grossman, 2022). If media coverage consistly includes mentions of immigration in the context of crime, this could pursuade voters to associate the two together and favor anti-immigration policies 
+
+**Content Analysis Plan:** The purpose of this is to understand the extent to which immigration is mentioned in crime articles covering Baltimore. I initially decided to number of articles containing the words immigrant, Mexican, Venezuelan, cartel, illegals, aliens, immigration in articles. Upon asking ChatGPT for additional descriptors, I will also use the words migrant, refugee, asylum, border, documented, undocumented, deport, naturalization, sanctuary, detention, Central American, South American, Honduran, Guatemalan, Salvadoran, Latino, Hispanic, and South American. I will quantify the number of articles that use this language to understand the extent to which these descriptors are used. 
+
+
+**2. How does the public use a social media site to discuss topics in Baltimore?**
+
+**Data Source:** The data for this portion of the project consists of 932 Reddit posts made in the subreddit r/Baltimore. To ensure a wide range of posts are included in the data set, I made no restrictions on the types of posts selected. I pulled the data on May 1, 2025. 
+
+**Summary of the literature:** Group online platforms can serve the public in a number of ways, including serving as a community for similiar or different types of people, identity, or a form of media (Wilson and Peterson, 2002). Reddit forums dedicated to cities (such as r/baltimore) can serve as a place for past, present, or future residents/visitors to learn more about the city. However, there are also potential downsides to these online communities. In the context of cities or neighborhoods, residents have written posts where they racially profile other residents or warn their neighbors of African Americans, who they suspect may commit a crime, passing through the neighborhood (Lambright, 2019; Kurwa, 2019). In this way, online communities serve both positive and negative purposes for sharing information. 
+
+**Content Analysis Plan:** For the second research question, I will use the VADER lexicon as my codebook to identify understand sentiments in the group. The unit of analysis will be posts. Based on the lexicon, I will categorize articles within the sample as being mostly negative, neutral, or positive. I will then count the number of articles that fit into each category to better describe the data. I will also create a topic model to understand the categories of posts. This will help us understand how the public uses the subreddit and the extent to which certain topics are discussed. 
+
+
+```{r}
+#Install packages if you don't have them already
+# install.packages("tidyverse")
+# install.packages("vader")
+# install.packages("tidytext")
+# install.packages("quanteda")
+# install.packages("readtext")
+# install.packages("DT")
+# install.packages("rio")
+# install.packages("lubridate")
+```
+
+
+```{r}
+#Load the appropriate software libraries
+library(tidyverse)
+library(tidytext) 
+library(quanteda)
+library(readtext)
+library(DT)
+library(lubridate)
+library(rio)
+library(dplyr)
+library(vader)
+library(scales)
+library(ggplot2)
+```
+**Let's start with the data needed for our first research question, "To what extent do news articles covering crime in Baltimore mention immigrant groups?". Here, I am loading in our 100 articles covering crime in Baltimore, including the metadata.** 
+
+```{r}
+#Import your data 
+bmore <- rio::import("Results list for__crime_ _Baltimore_ copy 2.XLSX")
+bmore1 <- rio::import("Results list for__crime_ _Baltimore_(2).XLSX")
+#Combining data files since the export gave me 2 files 
+bmore_final <- rbind(bmore, bmore1)
+
+articles_df <- read_csv("articles_df copy 2.csv")
+
+```
+
+
+**It's good to get to know your data first. Let's check...how many articles are in our data set?**
+```{r}
+cat("\nNumber of articles: ", sum(!is.na(bmore_final$Title))  )
+```
+
+**What's the average word count of the articles? Are they shorter or longer in nature?**
+```{r}
+cat("\nAverage word count seems to be medium in length. The average word count is: ", mean(bmore_final$"Word count", na.rm = TRUE)) 
+```
+
+**Let's look at the publication location of the articles**
+**And here we see that most articles were published in Maryland but some are international, from other states, or published by the U.S. government.**
+```{r}
+table(bmore_final$"Publication location")
+```
+
+**Let's take a look at the distribution of the data over time. In which months did we see the most articles?**
+```{r}
+#Let's extract the year, month, and day of the week from the data so that we can do this
+bmore_final <- bmore_final %>%
+  mutate(date_parsed = mdy(`Published date`),         # convert to actual Date
+         year = year(date_parsed),                    # extract year
+         month = month(date_parsed, label = TRUE),    # extract month (as label like Jan, Feb)
+         day = day(date_parsed))                      # extract day
+
+
+# Step 1: Create a new column with Year-Month format
+bmore_final <- bmore_final %>%
+  mutate(month_year = format(date_parsed, "%Y-%m"))  # or use lubridate::floor_date(date_parsed, "month")
+
+# Step 2: Convert to factor or date for proper ordering
+bmore_final$month_year <- as.Date(paste0(bmore_final$month_year, "-01"))  # ensures proper date order
+
+# Step 3: Plot
+ggplot(bmore_final, aes(x = month_year)) +
+  geom_bar(fill = "steelblue") +
+  labs(title = "Distribution of Publications by Month",
+       x = "Month; Graphic by BAS 5/1/25",
+       y = "Number of Publications") +
+  scale_x_date(date_labels = "%b %Y", date_breaks = "1 month") +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+
+```
+
+
+**Here we see that an increase began immediately before the election in November 2024 and increased through inauguration in January 2025. This checks out...we know that crime coverage spikes around elections because it's a hot topic!**
+
+**Now that we've done some preliminary work to make sense of our data, let's look at the extent to which immigration is discussed in these 100 articles. Remember, we are looking at the number of articles that include the words: immigrant, Mexican, Venezuelan, cartel, illegals, aliens, immigration, migrant, refugee, asylum, border, documented, undocumented, deport, naturalization, sanctuary, detention, Central American, South American, Honduran, Guatemalan, Salvadoran, Latino, Hispanic, and South American.**
+
+```{r}
+
+# Step 1: Define the immigration-related keywords
+keywords <- c("immigrant", "mexican", "venezuelan", "cartel", "illegals", "aliens", "immigration",
+              "migrant", "refugee", "asylum", "border", "documented", "undocumented", "deport",
+              "naturalization", "sanctuary", "detention", "central american", "south american",
+              "honduran", "guatemalan", "salvadoran", "latino", "human trafficking", "slavery", "hispanic")
+
+# Step 2: Create immigration flag at the sentence level, handling NA sentences
+articles_df <- articles_df %>%
+  mutate(
+    sentence_clean = ifelse(is.na(sentence), "", tolower(sentence)),
+    immigration = ifelse(str_detect(sentence_clean, str_c(keywords, collapse = "|")), 1, 0)
+  )
+
+# Step 3: Aggregate to article level (v1), ignoring NA values
+article_flags <- articles_df %>%
+  group_by(v1) %>%
+  summarise(immigration_article = ifelse(sum(immigration, na.rm = TRUE) > 0, 1, 0))
+
+# Step 4: Count how many articles mention immigration
+immigration_count <- sum(article_flags$immigration_article, na.rm = TRUE)
+
+# Output the result
+print(paste("Number of articles mentioning immigration-related terms:", immigration_count))
+
+# Create a summary data frame with counts
+immigration_summary <- article_flags %>%
+  count(immigration_article)
+
+# Plot with counts on bars
+ggplot(immigration_summary, aes(x = factor(immigration_article), y = n)) +
+  geom_bar(stat = "identity", fill = "steelblue") +
+  geom_text(aes(label = n), vjust = -0.3, size = 5) +
+  labs(
+    title = "Number of Articles Mentioning Immigration",
+    x = "Mentions Immigration (0 = No, 1 = Yes); Graphic by BAS 5/1/25",
+    y = "Number of Articles"
+  ) +
+  theme_minimal()
+
+
+```
+
+
+
+**I found that 23, or 23%, of articles covering crime in Baltimore used immigration related words.**
+
+**Now, let's start on our second research question: How does the public use a social media site to discuss topics in Baltimore?**
+```{r}
+#Let's load any new libraries needed 
+#install.packages("devtools")
+#devtools::install_github('ivan-rivera/RedditExtractor')
+library(RedditExtractoR)
+library(tidyverse)
+```
+```{r}
+#Let's load our data!
+baltimore_urls <- find_thread_urls(subreddit="baltimore", sort_by="top")
+str(baltimore_urls)
+#Remember, data changes throughout the day as more folks post on Reddit. So let's save our results and then import them so that we can work with the same data set. Let's also comment out the write.csv when done so that we don't overwrite. 
+#write.csv(baltimore_urls,"baltimore_urls.csv")
+baltimore_urls = read.csv("baltimore_urls.csv")
+```
+
+
+**Let's start with some bigrams to understand the top two-word phrases mentioned in these posts.**
+```{r}
+library(tidytext)
+library(dplyr)
+
+# Tokenize the 'text' column into individual words
+baltimore_text_urls <- str_replace_all(baltimore_urls$text, "- ", "")
+baltimore_text_urls <- tibble(baltimore_text_urls,)
+
+# unnest includes lower, punct removal
+
+stories_tokenized <- baltimore_text_urls %>%
+  unnest_tokens(word,baltimore_text_urls)
+
+stories_tokenized
+
+data(stop_words)
+stories_tokenized <- stories_tokenized %>%
+  anti_join(stop_words, by = c("word" = "word")) %>%
+  filter(word != "temp_file") %>%
+  filter(word != "stories_corpus") %>%
+  filter(!grepl('[0-9]', word))
+
+bigrams <- baltimore_text_urls %>%
+  unnest_tokens(bigram, baltimore_text_urls, token = "ngrams", n = 2)
+
+#Filter out stop words.
+
+bigrams1 <- bigrams %>%
+  separate(bigram, c("word1", "word2"), sep = " ")
+
+bigrams2 <- bigrams1 %>%
+  filter(!word1 %in% stop_words$word) %>%
+  filter(!word2 %in% stop_words$word) %>%
+  filter(!word1 %in% c("amp", "jpg","format","width","https", "webp", "edit", "usp", "2025", "2", "baltimore", "15", "30")) %>%
+  filter(!word2 %in% c("amp", "jpg","format","width","https","webp", "edit", "usp", "2025", "2", "baltimore", "15", "30")) %>%
+  filter(!is.na(word1)) %>%
+  filter(!is.na(word2))
+
+# word count and top 20 bigram
+bigram3 <- bigrams2 %>%
+  count(word1, word2, sort = TRUE)%>%
+  top_n(20, n)
+
+library(dplyr)
+library(ggplot2)
+library(tidyr)
+
+library(dplyr)
+library(ggplot2)
+library(tidyr)
+
+# Step 1: Create bigram column from word1 and word2
+bigram_plot_data <- bigram3 %>%
+  unite("bigram", word1, word2, sep = " ") %>%
+  arrange(desc(n)) %>%
+  slice_max(n, n = 20)
+
+# Step 2: Plot using the provided n column
+ggplot(bigram_plot_data, aes(x = reorder(bigram, n), y = n)) +
+  geom_col(fill = "steelblue") +
+  geom_text(aes(label = n), hjust = -0.1, size = 4) +
+  coord_flip() +
+  labs(
+    title = "Top 20 Most Frequent Bigrams",
+    x = "Bigram",
+    y = "Count; Graphic by BAS 5/1/25"
+  ) +
+  theme_minimal(base_size = 14) +
+  theme(plot.title = element_text(hjust = 0.5)) +
+  ylim(0, max(bigram_plot_data$n) * 1.1)  # gives space for labels
+
+
+
+```
+
+
+
+**The bigrams are interesting in that they reveal a bit about who is posting in this subreddit. There are numerous cities that show up in the bigrmams, all of which are Baltimore's more safe and predominantly White neighborhoods like Patterson Park, Federal Hill, and even White Marsh (which is in the county). This suggests that conversations (and possibly post orignators) have ties to those neighborhoods. Further, bigrams related to events are pretty popular, which may be a result of spring and summer events popping up now that the weather is warmer.**
+
+
+**Which posts (maybe the top 3) had the most number of comments? Let's look at them...**
+```{r}
+
+options(tibble.width = Inf)  # Prevent text truncation
+
+baltimore_urls %>%
+  arrange(desc(comments)) %>%
+  slice_head(n = 3) %>%
+  select(title, text, comments)
+
+```
+
+**The first one is about the annoying dirt bikes that go through the Baltimore streets in the early and late afternoons. I feel their pain!**
+**The second is about Baltimore being (surprisingly) trans-friendly. That's a good thing!**
+**The third is about sending back a meal at a Baltimore restaurant...okay?**
+
+
+**Now, let's do a sentiment analysis of these posts. What tones do they generally take on (positive, neutral, or negative)?**
+#**This website has some great code for using VEDA: [website] (https://blog.marketingdatascience.ai/basic-sentiment-analysis-using-r-with-vader-4eecb738566f)**
+
+```{r}
+#Remember, we installed VADER earlier. 
+#install.packages("vader")
+#library(vader)
+vader_results <- baltimore_urls %>%
+  mutate(vader_output = map(text, ~ get_vader(.x)))
+
+#The code below characterizes each post by calculating the following: 
+
+#Word-level sentiment scores: Each word is assigned a sentiment score, adjusted based on factors like punctuation and capitalization.
+#Compound score: A single value summarizing the overall sentiment of the entire sentence.
+#Positive (pos), neutral (neu), and negative (neg) scores: Representing the percentage of words that fall into each sentiment category.
+#But count: Tracks the occurrence of the word “but,” indicating potential shifts in sentiment within the sentence.
+
+vader_results <- vader_results %>%
+  mutate(
+    word_scores = map(vader_output, ~ .x[names(.x) != "compound" & 
+                                           names(.x) != "pos" & 
+                                           names(.x) != "neu" & 
+                                           names(.x) != "neg" & 
+                                           names(.x) != "but_count"]),  # Extract word-level scores
+    compound = map_dbl(vader_output, ~ as.numeric(.x["compound"])),
+    pos = map_dbl(vader_output, ~ as.numeric(.x["pos"])),
+    neu = map_dbl(vader_output, ~ as.numeric(.x["neu"])),
+    neg = map_dbl(vader_output, ~ as.numeric(.x["neg"])),
+    but_count = map_dbl(vader_output, ~ as.numeric(.x["but_count"]))
+  )
+
+#Now, let's visualize this. 
+# Count number of unique posts (based on text) with scores >= 0.5
+neu_posts <- vader_results %>% filter(neu >= 0.5)
+pos_posts <- vader_results %>% filter(pos >= 0.5)
+neg_posts <- vader_results %>% filter(neg >= 0.5)
+
+# Create summary table
+high_score_counts <- data.frame(
+  Sentiment = c("Neutral ≥ 0.5", "Positive ≥ 0.5", "Negative ≥ 0.5"),
+  Count = c(
+    n_distinct(neu_posts$text),
+    n_distinct(pos_posts$text),
+    n_distinct(neg_posts$text)
+  )
+)
+
+# View result
+print(high_score_counts)
+
+```
+**Now, let's visualize these sentiments by day of the week.**
+```{r}
+ggplot(vader_results, aes(x = neu)) +
+  geom_histogram(binwidth = 0.05, fill = "purple", color = "black") +
+  scale_x_continuous(limits = c(0, 1)) +
+  labs(
+    title = "Distribution of Positive Sentiment Scores",
+    x = "Neutral Sentiment (neu); Graphic by BAS 5/1/25",
+    y = "Number of Posts"
+  ) +
+  theme_minimal(base_size = 14)
+```
+
+
+
+**Interesting. Posts skew towards being neutral rather than positive or negative. This makes sense because it's a lot of information sharing!**
+
+**But let's look at sentiments over time. Have they always been neutral?**
+```{r}
+#Note: I used ChatGPT for this portion because I wanted to add in an average line to understand how much posts deviated from the mean over time. 
+
+library(dplyr)
+library(ggplot2)
+library(lubridate)
+
+# Step 1: Convert date_utc to Date if it's not already
+vader_results <- vader_results %>%
+  mutate(date_parsed = as.Date(date_utc))
+
+# Step 2: Group by day and calculate average 'neu'
+daily_neu <- vader_results %>%
+  group_by(date_parsed) %>%
+  summarise(avg_neu = mean(neu, na.rm = TRUE)) %>%
+  ungroup()
+
+# Step 3: Calculate overall average 'neu' across all posts
+overall_avg_neu <- mean(vader_results$neu, na.rm = TRUE)
+
+# Step 4: Plot the trend with average line
+ggplot(daily_neu, aes(x = date_parsed, y = avg_neu)) +
+  geom_line(color = "steelblue", size = 0.8) +
+  geom_point(color = "steelblue", size = 1.5) +
+  geom_hline(yintercept = overall_avg_neu, linetype = "dashed", color = "red") +
+  labs(title = "Daily Average Neutral Sentiment Over Time",
+       x = "Date; Graphic by BAS 5/1/25",
+       y = "Average Neutral (neu) Score") +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
+  annotate("text", x = max(daily_neu$date_parsed), y = overall_avg_neu, label = paste("Avg =", round(overall_avg_neu, 3)), color = "red", hjust = 1, vjust = 1.5)
+
+
+```
+
+
+**In general, posts are not deviating much from beig neutral. Neutral scores remain above 0.7 no matter the day, suggesting that there is not a ton of variation.**
+
+**And finally, let's do some topic modeling. What are folks talking about? How do they use these groups?**
+```{r}
+# set options
+options(stringsAsFactors = F)         # no automatic data transformation
+options("scipen" = 100, "digits" = 4) # suppress math annotation
+# load packages
+here::here()
+library(tidyverse)
+library(tidytext)
+library(rio)
+library(readtext)
+#topic modeling
+library(quanteda)
+library(tm)
+library(topicmodels)
+library(lda)
+library(ldatuning)
+# from tutorial packages
+library(DT)
+library(knitr) 
+library(kableExtra) 
+library(reshape2)
+library(ggplot2)
+library(wordcloud)
+library(pals)
+library(SnowballC)
+library(flextable)
+
+```
+
+
+
+```{r}
+### Process into corpus object
+textdata <- baltimore_urls %>% 
+  select(title, text, date_utc, comments) %>% 
+  rename(doc_id = title) %>%
+  as.data.frame()  
+  
+
+# load stopwords
+english_stopwords <- readLines("https://slcladal.github.io/resources/stopwords_en.txt", encoding = "UTF-8")
+
+
+# create corpus object
+corpus <- Corpus(DataframeSource(textdata))
+# Preprocessing chain
+processedCorpus <- tm_map(corpus, content_transformer(tolower))
+processedCorpus <- tm_map(processedCorpus, removeWords, english_stopwords)
+processedCorpus <- tm_map(processedCorpus, removePunctuation, preserve_intra_word_dashes = TRUE)
+processedCorpus <- tm_map(processedCorpus, removeNumbers)
+processedCorpus <- tm_map(processedCorpus, stemDocument, language = "en")
+processedCorpus <- tm_map(processedCorpus, stripWhitespace)
+```
+
+```{r tm3a}
+#DTM: rows correspond to the documents in the corpus. Columns correspond to the terms in the documents. Cells correspond to the weights of the terms. (Girder)
+# compute document term matrix with terms >= minimumFrequency
+minimumFrequency <- 5
+DTM <- DocumentTermMatrix(processedCorpus, control = list(bounds = list(global = c(minimumFrequency, Inf))))
+# have a look at the number of documents and terms in the matrix
+dim(DTM)
+# due to vocabulary pruning, we have empty rows in our DTM
+# LDA does not like this. So we remove those docs from the
+# DTM and the metadata
+sel_idx <- slam::row_sums(DTM) > 0
+DTM <- DTM[sel_idx, ]
+textdata <- textdata[sel_idx, ]
+#5 term minimum[1] 1387 3019
+#5 term minimum[1] 308597 10339
+
+```
+
+
+```{r}
+## Topic proportions over time {.unnumbered}
+
+#We examine topics in the data over time by aggregating mean topic proportions per date These aggregated topic proportions can then be visualized, e.g. as a bar plot.
+# append month information for aggregation
+library(lubridate)
+library(formattable)
+
+textdata$date_parsed <- as.Date(textdata$date_utc)
+textdata$day <- day(textdata$date_parsed)
+
+```
+
+
+
+```{r tm12}
+# number of topics
+# K <- 20
+K <- 6
+# set random number generator seed
+set.seed(9161)
+#Latent Dirichlet Allocation, LDA, Gibbs is the sampling method 
+topicModel2 <- LDA(DTM, K, method="Gibbs", control=list(iter = 500, verbose = 25, alpha = 0.2))
+tmResult <- posterior(topicModel2)
+theta <- tmResult$topics
+beta <- tmResult$terms
+topicNames <- apply(terms(topicModel2, 10), 2, paste, collapse = " ")  # reset topicnames
+```
+
+
+```{r}
+### Mean topic proportions per day
+# Step 1: Check dimensions
+n_theta <- nrow(theta)
+n_textdata <- length(textdata$day)
+
+cat("Number of rows in theta: ", n_theta, "\n")
+cat("Number of documents in textdata: ", n_textdata, "\n")
+
+# Check if textdata contains all the documents in theta
+common_ids <- intersect(rownames(theta), textdata$doc_id) # Assuming textdata has a 'doc_id' column
+
+# Filter textdata to include only the documents present in theta
+textdata_filtered <- textdata[textdata$doc_id %in% common_ids, ]
+
+# Check dimensions after filtering
+n_textdata_filtered <- nrow(textdata_filtered)
+cat("Number of documents in filtered textdata: ", n_textdata_filtered, "\n")
+
+# Ensure the lengths match now
+if (n_theta != n_textdata_filtered) {
+  stop("The number of rows in 'theta' still does not match the length of 'textdata_filtered$decade'.")
+}
+
+# Align rownames of theta with filtered textdata
+theta_aligned <- theta[rownames(theta) %in% textdata_filtered$doc_id, ]
+
+# Optional: Verify the order of documents
+if (!all(rownames(theta_aligned) == textdata_filtered$doc_id)) {
+  # If the order doesn't match, reorder one to match the other
+  textdata_filtered <- textdata_filtered[match(rownames(theta_aligned), textdata_filtered$doc_id), ]
+}
+
+# Ensure they are now aligned and can be combined
+if (!all(rownames(theta_aligned) == textdata_filtered$doc_id)) {
+  stop("The document IDs still do not match. Please check the data alignment.")
+}
+
+# Step 2: Combine data
+topic_data <- data.frame(theta_aligned, day = textdata_filtered$day)
+
+# Step 3: Aggregate data
+topic_proportion_per_day <- aggregate(. ~ day, data = topic_data, FUN = mean)
+
+
+# get mean topic proportions per month
+# topic_proportion_per_month <- aggregate(theta, by = list(month = textdata$month), mean)
+# set topic names to aggregated columns
+colnames(topic_proportion_per_day)[2:(K+1)] <- topicNames
+# reshape data frame
+vizDataFrame <- melt(topic_proportion_per_day, id.vars = "day")
+
+
+```
+
+
+
+```{r}
+
+# Step 1: Check dimensions
+n_theta <- nrow(theta)
+n_textdata <- length(textdata$date_utc)
+
+cat("Number of rows in theta: ", n_theta, "\n")
+cat("Number of documents in textdata: ", n_textdata, "\n")
+
+# Check if textdata contains all the documents in theta
+common_ids <- intersect(rownames(theta), textdata$doc_id) # Assuming textdata has a 'doc_id' column
+
+# Filter textdata to include only the documents present in theta
+textdata_filtered <- textdata[textdata$doc_id %in% common_ids, ]
+
+# Check dimensions after filtering
+n_textdata_filtered <- nrow(textdata_filtered)
+cat("Number of documents in filtered textdata: ", n_textdata_filtered, "\n")
+
+# Ensure the lengths match now
+if (n_theta != n_textdata_filtered) {
+  stop("The number of rows in 'theta' still does not match the length of 'textdata_filtered$decade'.")
+}
+
+# Align rownames of theta with filtered textdata
+theta_aligned <- theta[rownames(theta) %in% textdata_filtered$doc_id, ]
+
+# Optional: Verify the order of documents
+if (!all(rownames(theta_aligned) == textdata_filtered$doc_id)) {
+  # If the order doesn't match, reorder one to match the other
+  textdata_filtered <- textdata_filtered[match(rownames(theta_aligned), textdata_filtered$doc_id), ]
+}
+
+# Ensure they are now aligned and can be combined
+if (!all(rownames(theta_aligned) == textdata_filtered$doc_id)) {
+  stop("The document IDs still do not match. Please check the data alignment.")
+}
+
+# Step 2: Combine data
+topic_data <- data.frame(theta_aligned, date = textdata_filtered$date_utc)
+
+# Step 3: Aggregate data
+topic_proportion_per_date <- aggregate(. ~ date, data = topic_data, FUN = mean)
+
+
+# get mean topic proportions per month
+# topic_proportion_per_month <- aggregate(theta, by = list(month = textdata$immigration), mean)
+# set topic names to aggregated columns
+colnames(topic_proportion_per_date)[2:(K+1)] <- topicNames
+# reshape data frame
+vizDataFrame <- melt(topic_proportion_per_date, id.vars = "date")
+
+
+```
+
+
+
+
+**Let's examine topic names.**
+```{r}
+#enframe(): Converts a named list into a dataframe.
+topics <- enframe(topicNames, name = "number", value = "text") %>% 
+  unnest(cols = c(text)) 
+
+topics 
+  
+```
+
+
+**Now, let's review the topics and determine a 1-2 word label after reading the source documents.**
+
+```{r}
+
+#Topic 1	work year time pay month make week call back long
+
+theta2 <- as.data.frame(theta)
+
+topic1 <- theta2 %>% 
+  rownames_to_column(var = "file") |> # putting the rownames into a new column called file
+  mutate(file = str_remove(file, "^X"),  # Remove leading 'X'
+         line = str_extract(file, "(?<=\\.txt)\\.\\d+")) |>   # Extract number after .txt
+  mutate(file = str_remove(file, "\\.\\d+$")) |> 
+  rename(topic1 = '1') |> # looking at first topic: work year time pay month make week call back long
+  top_n(20, topic1) |> 
+  arrange(desc(topic1)) |>  
+  select(file, line, topic1) 
+
+
+```
+
+```{r}
+textdata <-textdata
+```
+
+```{r}
+
+#add categories
+
+vizDataFrame <- vizDataFrame %>% 
+  mutate(category = case_when(
+    str_detect(variable,  "work year time pay month make week call back long") ~ "time and work",
+    str_detect(variable, "baltimor area citi move find recommend place live \031ve good") ~ "recommendations",
+    str_detect(variable, "love place friend play food time game peopl bar open") ~ "activities and friends",
+    str_detect(variable, "baltimor local park citi communiti peopl amp book show free") ~ "community",
+     str_detect(variable, "park walk day hous pretti dog car citi area big") ~ "outdoors",
+    str_detect(variable, "street train peopl baltimor event park light traffic weekend happen") ~ "transportation",
+    ))
+
+
+```
+
+
+
+```{r}
+### for junk_words
+theta2 <- as.data.frame(theta)
+
+junk_words <- theta2 %>% 
+  #renaming for a general topic
+  rename(junk_words = '4') %>% 
+  top_n(20, junk_words ) %>%
+  arrange(desc(junk_words )) %>% 
+  select(junk_words)
+
+# Apply rownames_to_column
+junk_words  <- tibble::rownames_to_column(junk_words , "story_id") 
+
+junk_words $story_id <- gsub("X", "", junk_words $story_id)
+
+head(junk_words$story_id, 20)
+#Checks out
+
+
+```
+**And let's visualize what topics look like depending on the day of the week.**
+
+```{r}
+library(scales)
+vizDataFrame$date <- as.Date(vizDataFrame$date)
+
+# plot topic proportions per day as bar plot
+# Step 1: Add weekday column
+vizDataFrame <- vizDataFrame %>%
+  mutate(weekday = wday(date, label = TRUE, abbr = FALSE))  # Full day names like "Monday"
+
+# Step 2: Plot by weekday
+ggplot(vizDataFrame, aes(x = weekday, y = value, fill = category)) + 
+  geom_bar(stat = "identity") + 
+  ylab("Proportion") + 
+  scale_fill_manual(
+    values = c("#9933FF", "#33FFFF", "red", "yellow", "darkblue", "green"),
+    name = "Topic"
+  ) +
+  theme_minimal(base_size = 14) +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
+  labs(
+    title = "Common Narratives in Baltimore Reddit",
+    subtitle = "Six probable topics in sample. n = 932 posts",
+    caption = "Topic proportions by weekday; Graphic by BAS 5/1/25"
+  )
+
+
+```
+
+
+
+**Not so much time and work discussed on Saturday and Sundays. Also, more posts about the outdoors and recommendations during the middle of the week. This could be because folks are gearing up for things to do on the weekend?**
+
+
+**Essay of the findings:** This project analyzes 100 news articles covering crime in Baltimore to answer the research question “To what extent do news articles covering crime in Baltimore mention immigrant groups?”. To answer this question, I developed and refined a list of immigration-related terms and classified articles as mentioning or not mentioning this topic. My results show that articles mentioning crime in general were published the most immediately before and after the 2024 election, with the peak being in January 2025. More importantly, I find that only 23% of the articles in my sample mentioned immigration-related words. This suggests that immigration-related crime makes up almost a quarter of crime-related articles in Baltimore within my sample. Second, this project uses 932 Reddits posts in the subreddit r/baltimore to understand the sentiments and topics discussed in this group. To classify the sentiments of posts, I used the VADER lexicon. First, I find that the bigrams mention predominantly White neighborhoods in Baltimore, such as Patterson Park or Mt Vernon, suggesting that users discuss these neighborhoods over others. I also find that posts with the most comments cover three very different topics: nuisance in the streets, LGBTQ+ issues, and food at restaurants. This indicates that users found these types of posts most engaging. Last, I found that posts were typically neutral in their sentiment and that topics ranged from discussions on the outdoors, community, or transportation. These results help provide context on the extent to which immigration-related crime is a topic for Baltimore, whcih is important because news coverage helps drive policy conversations and public opinion. It also helps us understand the topics discussed in a Baltimore group and reveals that people engage in neutral conversation, suggesting it may be a platform that generally has neither strong positive nor strong negative effects.
+
+
+
+**Citations:**
+Adamson, Bryan. (2016). Thugs, Crooks, and Rebellious Negroes: Racist and Racialized Media Coverage of Michael Brown and the Ferguson Demonstrations. Harvard Journal on Racial & Ethnic Justice, 32, 189-278.
+
+Cho, W. and Ho, A. (2018). Does neighborhood crime matter? A multiyear survey study on  perceptions of race, victimization, and public safety. International Journal of Law, Crime and Justice, (55), 13-26. 
+
+Grossman, D. A. (2022). Media and policy making in the digital age. Routledge.
+
+Harris, C.T. & Gruenewald, J. News Media Trends in the Framing of Immigration and Crime, 1990–2013, Social Problems, Volume 67, Issue 3, August 2020, Pages 452–470, https://doi.org/10.1093/socpro/spz024
+
+Kurwa, R. (2019). Building the digitally gated community: The case of nextdoor. Surveillance and Society, 17(1), 111-117). 
+
+Lambright, K. (2019). Digital redlining: The Nextdoor app and the neighborhood of make-believe. Cultural Critique, 103, 84-90. 
+
