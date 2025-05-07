@@ -7,13 +7,13 @@ output: html_document
 
 **Jour689R Spring 2025**
 
-**Abstract:** This project looks at 100 news articles covering crime in Baltimore to understand the extent to which immigration is mentioned in those articles. It also used 932 Reddit posts to understand the sentiments of posts and the topics discussed in a Baltimore group. I find that less than half of news articles mention immigration (23%). I also find that Reddit posts are generally neutral in nature and that users discussed topics related to community, the outdoors, and transportation, for example. 
+**Abstract:** This project looks at 81 news articles covering crime in Baltimore to understand the extent to which immigration is mentioned in those articles. It also used 932 Reddit posts to understand the sentiments of posts and the topics discussed in a Baltimore group. I find that more than than a quarter of news articles mention immigration (28%). I also find that Reddit posts are generally neutral in nature and that users discussed topics related to community, the outdoors, and transportation, for example. 
 
 **Research Questions and Content Analysis Plans:**
 
 **1. To what extent do news articles covering crime in Baltimore mention immigrant groups?**
 
-**Data Source:** The data for this portion of the project consists of 100 newspaper articles downloaded from NexisUni. The articles were gathered based on the search parameters “crime” and “Baltimore”, meaning they had those two words in the article content. The data is restricted to those published in English.
+**Data Source:** The data for this portion of the project consists of 81 newspaper articles downloaded from NexisUni. The articles were gathered based on the search parameters “crime” and “Baltimore”, meaning they had those two words in the article content. The data is restricted to those published in English.
 
 **Summary of the literature:** Public discourse on crime has historically been and is increasingly racialized (Cho and Ho, 2018). For example, in national news, White people are more likely to be shown as crime victims, law enforcement, or bystanders (Adamson, 2016). In the context of immigration, one study found that from 1990 to 2013, "most immigration-crime news stories describe immigrants as especially crime-prone or as increasing aggregate crime rates" (Harris and Gruenewald, 2020).This is important because one way to ensure that an issue maintains prominence in public policy is through the use of media. This is because the public, especially voters, obtain their information about policies through the media. Recurring media coverage of a certain issue helps keep it at the forefront of the public’s mind. Additionally, political elites use the media to communicate their messages, including the policies that they are advocating for or against (Grossman, 2022). If media coverage consistly includes mentions of immigration in the context of crime, this could pursuade voters to associate the two together and favor anti-immigration policies 
 
@@ -56,7 +56,7 @@ library(vader)
 library(scales)
 library(ggplot2)
 ```
-**Let's start with the data needed for our first research question, "To what extent do news articles covering crime in Baltimore mention immigrant groups?". Here, I am loading in our 100 articles covering crime in Baltimore, including the metadata.** 
+**Let's start with the data needed for our first research question, "To what extent do news articles covering crime in Baltimore mention immigrant groups?". Here, I am loading in our 81 articles covering crime in Baltimore, including the metadata.** 
 
 ```{r}
 #Import your data 
@@ -77,7 +77,15 @@ cat("\nNumber of articles: ", sum(!is.na(bmore_final$Title))  )
 
 **What's the average word count of the articles? Are they shorter or longer in nature?**
 ```{r}
-cat("\nAverage word count seems to be medium in length. The average word count is: ", mean(bmore_final$"Word count", na.rm = TRUE)) 
+# Convert Length to numeric (handles factors and characters)
+bmore_final$Length <- as.numeric(as.character(bmore_final$Length))
+
+# Now calculate the average word count
+avg_word_count <- mean(bmore_final$Length, na.rm = TRUE)
+
+cat("\nAverage word count seems to be medium in length. The average word count is:", round(avg_word_count, 2), "\n")
+
+
 ```
 
 **Let's look at the publication location of the articles**
@@ -166,7 +174,7 @@ ggplot(immigration_summary, aes(x = factor(immigration_article), y = n)) +
 
 
 
-**I found that 23, or 23%, of articles covering crime in Baltimore used immigration related words.**
+**I found that 23 (or 28%) articles covering crime in Baltimore used immigration related words.**
 
 **Now, let's start on our second research question: How does the public use a social media site to discuss topics in Baltimore?**
 ```{r}
