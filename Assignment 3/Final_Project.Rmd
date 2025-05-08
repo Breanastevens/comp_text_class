@@ -7,29 +7,31 @@ output: html_document
 
 **Jour689R Spring 2025**
 
-**Abstract:** This project looks at 81 news articles covering crime in Baltimore to understand the extent to which immigration is mentioned in those articles. It also used 932 Reddit posts to understand the sentiments of posts and the topics discussed in a Baltimore group. I find that more than than a quarter of news articles mention immigration (28%). I also find that Reddit posts are generally neutral in nature and that users discussed topics related to community, the outdoors, and transportation, for example. 
+**Abstract:** This project looks at 81 news articles covering crime in Baltimore to understand the extent to which immigration is mentioned in those articles. It also uses 932 Reddit posts to understand the sentiments of posts and the topics discussed in a Baltimore group. I find that more than than a quarter of news articles mention immigration (28%). I also find that Reddit posts are generally neutral in nature and that users discussed topics related to community, the outdoors, and transportation, for example. The first portion of this project helps us understand how the news covers crime while the second portion allows us to undertand how the public talk about a city, with the future goal of narrowing that analysis to understand how they talk about crime as well. Future research could restrict the analysis of Reddit data to only posts that talk about crime to identify if there are parallel trends or frequencies in the extent to which immigration is discussed in each.
 
 **Research Questions and Content Analysis Plans:**
 
 **1. To what extent do news articles covering crime in Baltimore mention immigrant groups?**
 
-**Data Source:** The data for this portion of the project consists of 81 newspaper articles downloaded from NexisUni. The articles were gathered based on the search parameters “crime” and “Baltimore”, meaning they had those two words in the article content. The data is restricted to those published in English.
+**Data Source:** The data for this portion of the project consists of 100 newspaper articles downloaded from NexisUni. The articles were gathered based on the search parameters “crime” and “Baltimore”, meaning they had those two words in the article content. The data is restricted to those published in English. Once duplicated were identified, the data set yieled 81 articles.
 
-**Summary of the literature:** Public discourse on crime has historically been and is increasingly racialized (Cho and Ho, 2018). For example, in national news, White people are more likely to be shown as crime victims, law enforcement, or bystanders (Adamson, 2016). In the context of immigration, one study found that from 1990 to 2013, "most immigration-crime news stories describe immigrants as especially crime-prone or as increasing aggregate crime rates" (Harris and Gruenewald, 2020).This is important because one way to ensure that an issue maintains prominence in public policy is through the use of media. This is because the public, especially voters, obtain their information about policies through the media. Recurring media coverage of a certain issue helps keep it at the forefront of the public’s mind. Additionally, political elites use the media to communicate their messages, including the policies that they are advocating for or against (Grossman, 2022). If media coverage consistly includes mentions of immigration in the context of crime, this could pursuade voters to associate the two together and favor anti-immigration policies 
+**Summary of the literature:** Public discourse on crime has historically been and is increasingly racialized (Cho and Ho, 2018). For example, in national news, White people are more likely to be shown as crime victims, law enforcement, or bystanders (Adamson, 2016). In the context of immigration, one study found that from 1990 to 2013, "most immigration-crime news stories describe immigrants as especially crime-prone or as increasing aggregate crime rates" (Harris and Gruenewald, 2020).This is important because one way to ensure that an issue maintains prominence in public policy is through the use of media. This is because the public, especially voters, obtain their information about policies through the media. Recurring media coverage of a certain issue helps keep it at the forefront of the public’s mind. Additionally, political elites use the media to communicate their messages, including the policies that they are advocating for or against (Grossman, 2022). If media coverage consistlenty includes mentions of immigration in the context of crime, this could persuade voters to associate the two together and favor anti-immigration policies.
 
-**Content Analysis Plan:** The purpose of this is to understand the extent to which immigration is mentioned in crime articles covering Baltimore. I initially decided to number of articles containing the words immigrant, Mexican, Venezuelan, cartel, illegals, aliens, immigration in articles. Upon asking ChatGPT for additional descriptors, I will also use the words migrant, refugee, asylum, border, documented, undocumented, deport, naturalization, sanctuary, detention, Central American, South American, Honduran, Guatemalan, Salvadoran, Latino, Hispanic, and South American. I will quantify the number of articles that use this language to understand the extent to which these descriptors are used. 
+The city of Baltimore continues to publish news articles and data that suggests that crime in the city has decreased over time. Given this decline and media coverage of immigration-related crime, it is timely for this type of project.
 
+![Retrieved from: **[website]** (<https://mayor.baltimorecity.gov/news/press-releases/2025-05-01-mayor-scott-highlights-continued-historic-decline>)](images/81cae79b-a8ec-4aba-88bb-2f253b591478_0ce3d0a88d0f78fad04e1a9d6cb88c5e.png)
+
+**Content Analysis Plan:** The purpose of this is to understand the extent to which immigration is mentioned in crime articles covering Baltimore. I initially decided to classify articles containing the words immigrant, Mexican, Venezuelan, cartel, illegals, aliens, immigration in articles. Upon asking ChatGPT for additional descriptors that I had not identified on my own, I added the words migrant, refugee, asylum, border, documented, undocumented, deport, naturalization, sanctuary, detention, Central American, South American, Honduran, Guatemalan, Salvadoran, Latino, Hispanic, and South American that it gave me. I will quantify the number of articles that use this language to understand the extent to which these descriptors are used.
 
 **2. How does the public use a social media site to discuss topics in Baltimore?**
 
-**Data Source:** The data for this portion of the project consists of 932 Reddit posts made in the subreddit r/Baltimore. To ensure a wide range of posts are included in the data set, I made no restrictions on the types of posts selected. I pulled the data on May 1, 2025. 
+**Data Source:** The data for this portion of the project consists of 932 Reddit posts made in the subreddit r/Baltimore. To ensure a wide range of posts are included in the data set, I made no restrictions on the types of posts selected. I pulled the data on May 1, 2025.
 
-**Summary of the literature:** Group online platforms can serve the public in a number of ways, including serving as a community for similiar or different types of people, identity, or a form of media (Wilson and Peterson, 2002). Reddit forums dedicated to cities (such as r/baltimore) can serve as a place for past, present, or future residents/visitors to learn more about the city. However, there are also potential downsides to these online communities. In the context of cities or neighborhoods, residents have written posts where they racially profile other residents or warn their neighbors of African Americans, who they suspect may commit a crime, passing through the neighborhood (Lambright, 2019; Kurwa, 2019). In this way, online communities serve both positive and negative purposes for sharing information. 
+**Summary of the literature:** Group online platforms can serve the public in a number of ways, including serving as a community for similar or different types of people or serving as a form of media (Wilson and Peterson, 2002). Reddit forums dedicated to cities (such as r/baltimore) can serve as a place for past, present, or future residents/visitors to learn more about the city. However, there are also potential downsides to these online communities. In the context of cities or neighborhoods, residents have written posts where they racially profile other residents or warn their neighbors of African Americans, who they suspect may commit a crime, passing through the neighborhood (Lambright, 2019; Kurwa, 2019). In this way, online communities serve both positive and negative purposes for sharing information.
 
-**Content Analysis Plan:** For the second research question, I will use the VADER lexicon as my codebook to identify understand sentiments in the group. The unit of analysis will be posts. Based on the lexicon, I will categorize articles within the sample as being mostly negative, neutral, or positive. I will then count the number of articles that fit into each category to better describe the data. I will also create a topic model to understand the categories of posts. This will help us understand how the public uses the subreddit and the extent to which certain topics are discussed. 
+**Content Analysis Plan:** For the second research question, I will use the VADER lexicon as my codebook to identify understand sentiments in the group. The unit of analysis will be posts. Based on the lexicon, I will categorize articles within the sample as being mostly negative, neutral, or positive. I will then count the number of articles that fit into each category to better describe the data. I will also create a topic model to understand the categories of posts. This will help us understand how the public uses the subreddit and the extent to which certain topics are discussed.
 
-
-```{r}
+```{r message=FALSE, warning=FALSE}
 #Install packages if you don't have them already
 # install.packages("tidyverse")
 # install.packages("vader")
@@ -41,8 +43,7 @@ output: html_document
 # install.packages("lubridate")
 ```
 
-
-```{r}
+```{r message=FALSE, warning=FALSE}
 #Load the appropriate software libraries
 library(tidyverse)
 library(tidytext) 
@@ -56,9 +57,10 @@ library(vader)
 library(scales)
 library(ggplot2)
 ```
-**Let's start with the data needed for our first research question, "To what extent do news articles covering crime in Baltimore mention immigrant groups?". Here, I am loading in our 81 articles covering crime in Baltimore, including the metadata.** 
 
-```{r}
+**Let's start with the data needed for our first research question, "To what extent do news articles covering crime in Baltimore mention immigrant groups?". Here, I am loading in our 81 articles covering crime in Baltimore, including the metadata.**
+
+```{r message=FALSE, warning=FALSE}
 #Import your data 
 bmore <- rio::import("Results list for__crime_ _Baltimore_ copy 2.XLSX")
 bmore1 <- rio::import("Results list for__crime_ _Baltimore_(2).XLSX")
@@ -69,13 +71,14 @@ articles_df <- read_csv("articles_df copy 2.csv")
 
 ```
 
-
 **It's good to get to know your data first. Let's check...how many articles are in our data set?**
+
 ```{r}
 cat("\nNumber of articles: ", sum(!is.na(bmore_final$Title))  )
 ```
 
 **What's the average word count of the articles? Are they shorter or longer in nature?**
+
 ```{r}
 # Convert Length to numeric (handles factors and characters)
 bmore_final$Length <- as.numeric(as.character(bmore_final$Length))
@@ -88,13 +91,14 @@ cat("\nAverage word count seems to be medium in length. The average word count i
 
 ```
 
-**Let's look at the publication location of the articles**
-**And here we see that most articles were published in Maryland but some are international, from other states, or published by the U.S. government.**
+**Let's look at the publication location of the articles** **And here we see that most articles were published in Maryland but some are international, from other states, or published by the U.S. government.**
+
 ```{r}
 table(bmore_final$"Publication location")
 ```
 
 **Let's take a look at the distribution of the data over time. In which months did we see the most articles?**
+
 ```{r}
 #Let's extract the year, month, and day of the week from the data so that we can do this
 bmore_final <- bmore_final %>%
@@ -123,8 +127,7 @@ ggplot(bmore_final, aes(x = month_year)) +
 
 ```
 
-
-**Here we see that an increase began immediately before the election in November 2024 and increased through inauguration in January 2025. This checks out...we know that crime coverage spikes around elections because it's a hot topic!**
+**Here we see that an increase began immediately before the election in November 2024 and increased through inauguration in January 2025. This checks out...we know that crime coverage spikes around elections because it's a hot topic! Also, this could just be a normal distribution of the data because it was pulled in January 2025.**
 
 **Now that we've done some preliminary work to make sense of our data, let's look at the extent to which immigration is discussed in these 100 articles. Remember, we are looking at the number of articles that include the words: immigrant, Mexican, Venezuelan, cartel, illegals, aliens, immigration, migrant, refugee, asylum, border, documented, undocumented, deport, naturalization, sanctuary, detention, Central American, South American, Honduran, Guatemalan, Salvadoran, Latino, Hispanic, and South American.**
 
@@ -158,25 +161,28 @@ print(paste("Number of articles mentioning immigration-related terms:", immigrat
 immigration_summary <- article_flags %>%
   count(immigration_article)
 
-# Plot with counts on bars
+# Plot with customized x-axis labels
 ggplot(immigration_summary, aes(x = factor(immigration_article), y = n)) +
   geom_bar(stat = "identity", fill = "steelblue") +
   geom_text(aes(label = n), vjust = -0.3, size = 5) +
+  scale_x_discrete(
+    labels = c("0" = "Not immigration related", "1" = "Immigration related")
+  ) +
   labs(
     title = "Number of Articles Mentioning Immigration",
-    x = "Mentions Immigration (0 = No, 1 = Yes); Graphic by BAS 5/1/25",
+    x = "Mentions Immigration; Graphic by BAS 5/1/25",
     y = "Number of Articles"
   ) +
   theme_minimal()
 
 
+
 ```
-
-
 
 **I found that 23 (or 28%) articles covering crime in Baltimore used immigration related words.**
 
 **Now, let's start on our second research question: How does the public use a social media site to discuss topics in Baltimore?**
+
 ```{r}
 #Let's load any new libraries needed 
 #install.packages("devtools")
@@ -184,17 +190,18 @@ ggplot(immigration_summary, aes(x = factor(immigration_article), y = n)) +
 library(RedditExtractoR)
 library(tidyverse)
 ```
+
 ```{r}
 #Let's load our data!
-baltimore_urls <- find_thread_urls(subreddit="baltimore", sort_by="top")
-str(baltimore_urls)
+#baltimore_urls <- find_thread_urls(subreddit="baltimore", sort_by="top")
+#str(baltimore_urls)
 #Remember, data changes throughout the day as more folks post on Reddit. So let's save our results and then import them so that we can work with the same data set. Let's also comment out the write.csv when done so that we don't overwrite. 
 #write.csv(baltimore_urls,"baltimore_urls.csv")
 baltimore_urls = read.csv("baltimore_urls.csv")
 ```
 
-
 **Let's start with some bigrams to understand the top two-word phrases mentioned in these posts.**
+
 ```{r}
 library(tidytext)
 library(dplyr)
@@ -270,12 +277,10 @@ ggplot(bigram_plot_data, aes(x = reorder(bigram, n), y = n)) +
 
 ```
 
-
-
-**The bigrams are interesting in that they reveal a bit about who is posting in this subreddit. There are numerous cities that show up in the bigrmams, all of which are Baltimore's more safe and predominantly White neighborhoods like Patterson Park, Federal Hill, and even White Marsh (which is in the county). This suggests that conversations (and possibly post orignators) have ties to those neighborhoods. Further, bigrams related to events are pretty popular, which may be a result of spring and summer events popping up now that the weather is warmer.**
-
+**The bigrams are interesting in that they reveal a bit about who is posting in this subreddit. There are numerous cities that show up in the bigrams, all of which are Baltimore's more safe and predominantly White neighborhoods like Patterson Park, Federal Hill, and even White Marsh (which is in the county). This suggests that conversations (and possibly post originators) have ties to those neighborhoods. Further, bigrams related to events are pretty popular, which may be a result of spring and summer events popping up now that the weather is warmer.**
 
 **Which posts (maybe the top 3) had the most number of comments? Let's look at them...**
+
 ```{r}
 
 options(tibble.width = Inf)  # Prevent text truncation
@@ -287,13 +292,9 @@ baltimore_urls %>%
 
 ```
 
-**The first one is about the annoying dirt bikes that go through the Baltimore streets in the early and late afternoons. I feel their pain!**
-**The second is about Baltimore being (surprisingly) trans-friendly. That's a good thing!**
-**The third is about sending back a meal at a Baltimore restaurant...okay?**
+**The first one is about the annoying dirt bikes that go through the Baltimore streets in the early and late afternoons. I feel their pain!** **The second is about Baltimore being (surprisingly) trans-friendly. That's a good thing!** **The third is about sending back a meal at a Baltimore restaurant...okay?**
 
-
-**Now, let's do a sentiment analysis of these posts. What tones do they generally take on (positive, neutral, or negative)?**
-#**This website has some great code for using VEDA: [website] (https://blog.marketingdatascience.ai/basic-sentiment-analysis-using-r-with-vader-4eecb738566f)**
+**Now, let's do a sentiment analysis of these posts. What tones do they generally take on (positive, neutral, or negative)?** **This website has some great code for using VEDA: [website] (<https://blog.marketingdatascience.ai/basic-sentiment-analysis-using-r-with-vader-4eecb738566f>)**
 
 ```{r}
 #Remember, we installed VADER earlier. 
@@ -343,24 +344,25 @@ high_score_counts <- data.frame(
 print(high_score_counts)
 
 ```
-**Now, let's visualize these sentiments by day of the week.**
+
+**Now, let's visualize this.**
+
 ```{r}
 ggplot(vader_results, aes(x = neu)) +
   geom_histogram(binwidth = 0.05, fill = "purple", color = "black") +
   scale_x_continuous(limits = c(0, 1)) +
   labs(
-    title = "Distribution of Positive Sentiment Scores",
+    title = "Distribution of Neutral Sentiment Scores",
     x = "Neutral Sentiment (neu); Graphic by BAS 5/1/25",
     y = "Number of Posts"
   ) +
   theme_minimal(base_size = 14)
 ```
 
-
-
-**Interesting. Posts skew towards being neutral rather than positive or negative. This makes sense because it's a lot of information sharing!**
+**Interesting. Posts skew towards being neutral. This makes sense because it's a lot of information sharing!**
 
 **But let's look at sentiments over time. Have they always been neutral?**
+
 ```{r}
 #Note: I used ChatGPT for this portion because I wanted to add in an average line to understand how much posts deviated from the mean over time. 
 
@@ -396,10 +398,10 @@ ggplot(daily_neu, aes(x = date_parsed, y = avg_neu)) +
 
 ```
 
-
-**In general, posts are not deviating much from beig neutral. Neutral scores remain above 0.7 no matter the day, suggesting that there is not a ton of variation.**
+**In general, posts are not deviating much from being neutral. Neutral scores remain above 0.7 no matter the day, suggesting that there is not a ton of variation.**
 
 **And finally, let's do some topic modeling. What are folks talking about? How do they use these groups?**
+
 ```{r}
 # set options
 options(stringsAsFactors = F)         # no automatic data transformation
@@ -428,8 +430,6 @@ library(SnowballC)
 library(flextable)
 
 ```
-
-
 
 ```{r}
 ### Process into corpus object
@@ -472,7 +472,6 @@ textdata <- textdata[sel_idx, ]
 
 ```
 
-
 ```{r}
 ## Topic proportions over time {.unnumbered}
 
@@ -485,8 +484,6 @@ textdata$date_parsed <- as.Date(textdata$date_utc)
 textdata$day <- day(textdata$date_parsed)
 
 ```
-
-
 
 ```{r tm12}
 # number of topics
@@ -501,7 +498,6 @@ theta <- tmResult$topics
 beta <- tmResult$terms
 topicNames <- apply(terms(topicModel2, 10), 2, paste, collapse = " ")  # reset topicnames
 ```
-
 
 ```{r}
 ### Mean topic proportions per day
@@ -558,8 +554,6 @@ vizDataFrame <- melt(topic_proportion_per_day, id.vars = "day")
 
 ```
 
-
-
 ```{r}
 
 # Step 1: Check dimensions
@@ -615,10 +609,8 @@ vizDataFrame <- melt(topic_proportion_per_date, id.vars = "date")
 
 ```
 
-
-
-
 **Let's examine topic names.**
+
 ```{r}
 #enframe(): Converts a named list into a dataframe.
 topics <- enframe(topicNames, name = "number", value = "text") %>% 
@@ -627,7 +619,6 @@ topics <- enframe(topicNames, name = "number", value = "text") %>%
 topics 
   
 ```
-
 
 **Now, let's review the topics and determine a 1-2 word label after reading the source documents.**
 
@@ -671,8 +662,6 @@ vizDataFrame <- vizDataFrame %>%
 
 ```
 
-
-
 ```{r}
 ### for junk_words
 theta2 <- as.data.frame(theta)
@@ -694,19 +683,30 @@ head(junk_words$story_id, 20)
 
 
 ```
+
 **And let's visualize what topics look like depending on the day of the week.**
 
 ```{r}
 library(scales)
 vizDataFrame$date <- as.Date(vizDataFrame$date)
 
-# plot topic proportions per day as bar plot
+#library(dplyr)
+#ibrary(ggplot2)
+#library(lubridate)
+
 # Step 1: Add weekday column
 vizDataFrame <- vizDataFrame %>%
   mutate(weekday = wday(date, label = TRUE, abbr = FALSE))  # Full day names like "Monday"
 
-# Step 2: Plot by weekday
-ggplot(vizDataFrame, aes(x = weekday, y = value, fill = category)) + 
+# Step 2: Normalize topic proportions by weekday
+vizDataProportional <- vizDataFrame %>%
+  group_by(weekday, category) %>%
+  summarise(total_value = sum(value), .groups = "drop") %>%
+  group_by(weekday) %>%
+  mutate(proportion = total_value / sum(total_value))
+
+# Step 3: Plot normalized (proportional) bar plot
+ggplot(vizDataProportional, aes(x = weekday, y = proportion, fill = category)) + 
   geom_bar(stat = "identity") + 
   ylab("Proportion") + 
   scale_fill_manual(
@@ -722,27 +722,21 @@ ggplot(vizDataFrame, aes(x = weekday, y = value, fill = category)) +
   )
 
 
+
 ```
-
-
 
 **Not so much time and work discussed on Saturday and Sundays. Also, more posts about the outdoors and recommendations during the middle of the week. This could be because folks are gearing up for things to do on the weekend?**
 
+**Essay of the findings:** This project analyzes 81 news articles covering crime in Baltimore to answer the research question “To what extent do news articles covering crime in Baltimore mention immigrant groups?”. To answer this question, I developed and refined a list of immigration-related terms and classified articles as mentioning or not mentioning this topic. My results show that articles mentioning crime in general were published the most immediately before and after the 2024 election, with the peak being in January 2025. This could also be because of when the data was pulled. More importantly, I find that 28% of the articles in my sample mentioned immigration-related words. This suggests that immigration-related crime makes up almost a quarter of crime-related articles in Baltimore within my sample. Second, this project uses 932 Reddit posts in the subreddit r/baltimore to understand the sentiments and topics discussed in this group. To classify the sentiments of posts, I used the VADER lexicon. First, I find that the bigrams mention predominantly White neighborhoods in Baltimore, such as Patterson Park or Mt Vernon, suggesting that users discuss these neighborhoods over others. I also find that posts with the most comments cover three very different topics: nuisance in the streets, LGBTQ+ issues, and food at restaurants. This indicates that users found these types of posts most engaging. Last, I found that posts were typically neutral in their sentiment and that topics ranged from discussions on the outdoors, community, or transportation. These results help provide context on the extent to which immigration-related crime is a topic for Baltimore, which is important because news coverage helps drive policy conversations and public opinion. It also helps us understand the topics discussed in a Baltimore group and reveals that people engage in neutral conversation, suggesting it may be a platform that generally has neither strong positive nor strong negative effects.
 
-**Essay of the findings:** This project analyzes 100 news articles covering crime in Baltimore to answer the research question “To what extent do news articles covering crime in Baltimore mention immigrant groups?”. To answer this question, I developed and refined a list of immigration-related terms and classified articles as mentioning or not mentioning this topic. My results show that articles mentioning crime in general were published the most immediately before and after the 2024 election, with the peak being in January 2025. More importantly, I find that only 23% of the articles in my sample mentioned immigration-related words. This suggests that immigration-related crime makes up almost a quarter of crime-related articles in Baltimore within my sample. Second, this project uses 932 Reddits posts in the subreddit r/baltimore to understand the sentiments and topics discussed in this group. To classify the sentiments of posts, I used the VADER lexicon. First, I find that the bigrams mention predominantly White neighborhoods in Baltimore, such as Patterson Park or Mt Vernon, suggesting that users discuss these neighborhoods over others. I also find that posts with the most comments cover three very different topics: nuisance in the streets, LGBTQ+ issues, and food at restaurants. This indicates that users found these types of posts most engaging. Last, I found that posts were typically neutral in their sentiment and that topics ranged from discussions on the outdoors, community, or transportation. These results help provide context on the extent to which immigration-related crime is a topic for Baltimore, whcih is important because news coverage helps drive policy conversations and public opinion. It also helps us understand the topics discussed in a Baltimore group and reveals that people engage in neutral conversation, suggesting it may be a platform that generally has neither strong positive nor strong negative effects.
+**Citations:** Adamson, Bryan. (2016). Thugs, Crooks, and Rebellious Negroes: Racist and Racialized Media Coverage of Michael Brown and the Ferguson Demonstrations. Harvard Journal on Racial & Ethnic Justice, 32, 189-278.
 
-
-
-**Citations:**
-Adamson, Bryan. (2016). Thugs, Crooks, and Rebellious Negroes: Racist and Racialized Media Coverage of Michael Brown and the Ferguson Demonstrations. Harvard Journal on Racial & Ethnic Justice, 32, 189-278.
-
-Cho, W. and Ho, A. (2018). Does neighborhood crime matter? A multiyear survey study on  perceptions of race, victimization, and public safety. International Journal of Law, Crime and Justice, (55), 13-26. 
+Cho, W. and Ho, A. (2018). Does neighborhood crime matter? A multiyear survey study on perceptions of race, victimization, and public safety. International Journal of Law, Crime and Justice, (55), 13-26.
 
 Grossman, D. A. (2022). Media and policy making in the digital age. Routledge.
 
-Harris, C.T. & Gruenewald, J. News Media Trends in the Framing of Immigration and Crime, 1990–2013, Social Problems, Volume 67, Issue 3, August 2020, Pages 452–470, https://doi.org/10.1093/socpro/spz024
+Harris, C.T. & Gruenewald, J. News Media Trends in the Framing of Immigration and Crime, 1990–2013, Social Problems, Volume 67, Issue 3, August 2020, Pages 452–470, <https://doi.org/10.1093/socpro/spz024>
 
-Kurwa, R. (2019). Building the digitally gated community: The case of nextdoor. Surveillance and Society, 17(1), 111-117). 
+Kurwa, R. (2019). Building the digitally gated community: The case of nextdoor. Surveillance and Society, 17(1), 111-117).
 
-Lambright, K. (2019). Digital redlining: The Nextdoor app and the neighborhood of make-believe. Cultural Critique, 103, 84-90. 
-
+Lambright, K. (2019). Digital redlining: The Nextdoor app and the neighborhood of make-believe. Cultural Critique, 103, 84-90.
